@@ -1,43 +1,56 @@
 import sys
 import numpy as np
 from datetime import datetime
+from datetime import timedelta
 print "i find peaks"
 
 container_size = 3 
 I_container = np.zeros(container_size)
+window = timedelta(1)
+
+
+def get_datetime(string1, string2):
+	strip_character = ":"
+	time = strip_character.join(string2.split(strip_character)[:3])
+	time_string = string1 + " " + time
+	return datetime.strptime(time_string, '%d-%m-%Y %H:%M:%S')
+	
 
 try:
 	with open("data/EBA_LVPS_42_5VMB_OUTPUT_I.txt") as f:
 		fdata = [line.rstrip() for line in f]
 		for i,l in enumerate(fdata):
-			if(i < 3):
+			if(i < 100):
 				continue
-			a = l.split()
-			b = fdata[i-1].split()
-			c = fdata[i-2].split()
-			
-			I_container[0] = float(c[0].strip("0")) 
-			I_container[1] = float(b[0].strip("0")) 
-			I_container[2] = float(a[0].strip("0"))
-			
-			print c 
-			print b
-			print a
-			print I_container
-			print np.average(I_container)
-			print "\n"
-		#	vals = line.split()
-		#	#print fdata[i]
-		#	if len(values) < 4:
-		#		continue
-		#	strip_character = ":"
-		#	time = strip_character.join(values[2].split(strip_character)[:3])
-		#	time_string = values[1] + " " + time
-		#	utc_time = datetime.strptime(time_string, '%d-%m-%Y %H:%M:%S')
-		#	print utc_time, " : ", values[0]
-		#	print I_container
-		#	print "\n"
 
-		#	val_minus1 
+			# grabbing the datetime obj
+			values = l.split()
+			pt_time = get_datetime(values[1], values[2])
+
+			## grabbing the current in amps
+			pt_amps = float(values[0].strip("0"))
+
+			# some variables to loop backward from this pt
+			n = 1
+			delta_t = timedelta(0) 
+			prev_amps = []
+
+			while delta_t < window:
+				# grabbing (i-n)th line
+				prev_line = fdata[i-n]
+				prev_values = prev_line.split()
+				# (i-n)th time
+				prev_time = get_datetime(prev_values[1], prev_values[2])
+				delta_t = pt_time - prev_time
+				# pushing to container of previous I(amps)
+				prev_amps.append(float(prev_values[0].strip("0")))
+
+				# incrementing to next line
+				n += 1
+				
+			print "previous days worth of currents: ", prev_amps
+			print "\n"
+					
+
 except IOError:
 	print "Whoa there! You're trying to open a file you do not have..\n"
