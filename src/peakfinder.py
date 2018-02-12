@@ -22,7 +22,7 @@ def threshold_alg(currents, threshold):
 
 
 def finder(partition, module):
-	file_string = "data/" + partition + "_LVPS_" + module + "_5VMB_OUTPUT_I.txt"
+	file_string = "../data/" + partition + "_LVPS_" + module + "_5VMB_OUTPUT_I.txt"
 	try:
 		#with open("data/EBA_LVPS_42_5VMB_OUTPUT_I.txt") as f:
 		with open(file_string) as f:
