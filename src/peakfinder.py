@@ -1,11 +1,15 @@
 import sys
 import numpy as np
+import imp
 from datetime import datetime
 from datetime import timedelta
-print "i find peaks"
 
-container_size = 3 
-I_container = np.zeros(container_size)
+# automatic pwc algs
+sys.path.insert(0, '/home/ryan/Documents/cern/work/latched/burn_saver/util')
+from algs import zscore
+from algs import abs_threshold 
+
+
 window = timedelta(1)
 sd = 3
 
@@ -17,11 +21,8 @@ def get_datetime(string1, string2):
 	return datetime.strptime(time_string, '%d-%m-%Y %H:%M:%S')
 	
 
-def threshold_alg(currents, threshold):
-	print "gonna calculate some thresholds >:(" 
-
-
-def finder(partition, module):
+def finder(partition, module, method):
+	peaks = []
 	file_string = "../data/" + partition + "_LVPS_" + module + "_5VMB_OUTPUT_I.txt"
 	try:
 		#with open("data/EBA_LVPS_42_5VMB_OUTPUT_I.txt") as f:
@@ -56,10 +57,19 @@ def finder(partition, module):
 					# incrementing to next line
 					n += 1
 					
-				print "previous days worth of currents: ", prev_amps
-				threshold_alg(prev_amps, sd)
-				print "\n"
+				# calling thresholding algorithms!
+				if(method == 1):
+					should_pwc = abs_threshold(pt_amps, 9.9)
+					if(should_pwc):
+						print "power cycle this mother fucker"
+						print "\ttimestamp: ", pt_time
+						peaks.append(pt_time)
+				if(method == 2):
+					zscore(prev_amps, sd)
 						
 	
 	except IOError:
 		print "Whoa there! You're trying to open a file you do not have..\n"
+
+	# return a list of timestamps with what passed the cuts
+	return peaks
