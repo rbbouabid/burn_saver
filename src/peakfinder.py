@@ -11,7 +11,6 @@ from algs import abs_threshold
 
 
 window = timedelta(1)
-sd = 3
 
 
 def get_datetime(string1, string2):
@@ -21,7 +20,7 @@ def get_datetime(string1, string2):
 	return datetime.strptime(time_string, '%d-%m-%Y %H:%M:%S')
 	
 
-def finder(partition, module, method):
+def finder(partition, module, method, config):
 	peaks = []
 	file_string = "../data/" + partition + "_LVPS_" + module + "_5VMB_OUTPUT_I.txt"
 	try:
@@ -59,13 +58,13 @@ def finder(partition, module, method):
 					
 				# calling thresholding algorithms!
 				if(method == 1):
-					should_pwc = abs_threshold(pt_amps, 9.9)
+					should_pwc = abs_threshold(pt_amps, config)
 					if(should_pwc):
 						print "power cycle this mother fucker"
 						print "\ttimestamp: ", pt_time
 						peaks.append(pt_time)
 				if(method == 2):
-					zscore(prev_amps, sd)
+					zscore(prev_amps, config[method-1][1])
 						
 	
 	except IOError:
