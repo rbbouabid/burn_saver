@@ -5,7 +5,7 @@ from datetime import datetime
 from datetime import timedelta
 
 # automatic pwc algs
-sys.path.insert(0, '/home/ryan/Documents/cern/work/latched/burn_saver/util')
+sys.path.insert(0, '../util')
 from algs import zscore
 from algs import abs_threshold 
 
@@ -22,7 +22,7 @@ def get_datetime(string1, string2):
 
 def finder(partition, module, method, config):
 	peaks = []
-	file_string = "../data/" + partition + "_LVPS_" + module + "_5VMB_OUTPUT_I.txt"
+	file_string = "../clean/" + partition + "_LVPS_" + module + "_5VMB_OUTPUT_I.txt"
 	try:
 		#with open("data/EBA_LVPS_42_5VMB_OUTPUT_I.txt") as f:
 		with open(file_string) as f:
