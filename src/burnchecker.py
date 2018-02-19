@@ -4,10 +4,10 @@ import random
 
 #def burncheck(timestamps):
 def burncheck(module, peaklist):
-	print peaklist
+	#print peaklist
 	for peak in peaklist:
 		run = time2run(peak)	
-		print "MBLookup(",module,", ",run,")"
+		#print "MBLookup(",module,", ",run,")"
 		return MBLookup(module, run)
 
 
@@ -32,12 +32,12 @@ def time2run(timestamp):
 
 def MBLookup(module, runnumber):
 	is_signal = random.randint(0,1)
-	print "\tModule#: ", module, " run#: ", runnumber
+	#print "\tModule#: ", module, " run#: ", runnumber
 	if is_signal: 
-		print "\t\tThere was a burnout here!"
+		#print "\t\tThere was a burnout here!"
 		return 1 
 	else: 
-		print "\t\tThere was not a burnout here.."
+		#print "\t\tThere was not a burnout here.."
 		return 0 
 
 #end
