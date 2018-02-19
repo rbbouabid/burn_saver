@@ -36,32 +36,38 @@ def finder(partition, module, method, config):
 				pt_time = get_datetime(values[1], values[2])
 	
 				## grabbing the current in amps
-				pt_amps = float(values[0].strip("0"))
+				try:
+					pt_amps = float(values[0].strip("0"))
+				except ValueError:
+					continue
 	
-				# some variables to loop backward from this pt
-				n = 1
-				delta_t = timedelta(0) 
-				prev_amps = []
+				## some variables to loop backward from this pt
+				#n = 1
+				#delta_t = timedelta(0) 
+				#prev_amps = []
 	
-				while delta_t < window:
-					# grabbing (i-n)th line
-					prev_line = fdata[i-n]
-					prev_values = prev_line.split()
-					# (i-n)th time
-					prev_time = get_datetime(prev_values[1], prev_values[2])
-					delta_t = pt_time - prev_time
-					# pushing to container of previous I(amps)
-					prev_amps.append(float(prev_values[0].strip("0")))
+				#while delta_t < window:
+				#	# grabbing (i-n)th line
+				#	prev_line = fdata[i-n]
+				#	prev_values = prev_line.split()
+				#	# (i-n)th time
+				#	prev_time = get_datetime(prev_values[1], prev_values[2])
+				#	delta_t = pt_time - prev_time
+				#	# pushing to container of previous I(amps)
+				#	try:
+				#		prev_amps.append(float(prev_values[0].strip("0")))
+				#	except ValueError:
+				#		pass
 	
-					# incrementing to next line
-					n += 1
+				#	# incrementing to next line
+				#	n += 1
 					
 				# calling thresholding algorithms!
 				if(method == 1):
 					should_pwc = abs_threshold(pt_amps, config)
 					if(should_pwc):
-						print "power cycle this mother fucker"
-						print "\ttimestamp: ", pt_time
+						#print "power cycle this mother fucker"
+						#print "\ttimestamp: ", pt_time
 						peaks.append(pt_time)
 				if(method == 2):
 					zscore(prev_amps, config[method-1][1])
@@ -71,4 +77,20 @@ def finder(partition, module, method, config):
 		print "Whoa there! You're trying to open a file you do not have..\n"
 
 	# return a list of timestamps with what passed the cuts
-	return peaks
+	return cleaner(peaks)
+
+
+
+def cleaner(peaklist):
+	if not peaklist:
+		return peaklist
+	else:
+		oneday = timedelta(1)
+		cleanlist = [peaklist[0]]
+		for i, peak in enumerate(peaklist, 1):
+			if((peak - cleanlist[-1]) > oneday):
+				cleanlist.append(peak)
+		return cleanlist 
+
+
+# end of file
